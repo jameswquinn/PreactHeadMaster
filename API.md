@@ -14,8 +14,7 @@
    - [useHtmlAttributes](#usehtmlattributes)
    - [useBodyAttributes](#usebodyattributes)
 3. [Server-Side Rendering](#server-side-rendering)
-   - [renderStatic](#renderstatic)
-   - [generateFullDocument](#generatefulldocument)
+   - [renderStaticStream](#renderstaticstream)
 
 ## Components
 
@@ -109,7 +108,10 @@ A hook for setting the document title.
 ```jsx
 import { useTitle } from 'preactheadmaster';
 
-useTitle('My Page Title');
+function MyComponent() {
+  useTitle('My Page Title');
+  return <div>...</div>;
+}
 ```
 
 ### useMeta
@@ -125,10 +127,13 @@ A hook for setting meta tags.
 ```jsx
 import { useMeta } from 'preactheadmaster';
 
-useMeta([
-  { name: 'description', content: 'My page description' },
-  { property: 'og:title', content: 'My Open Graph Title' }
-]);
+function MyComponent() {
+  useMeta([
+    { name: 'description', content: 'My page description' },
+    { property: 'og:title', content: 'My Open Graph Title' }
+  ]);
+  return <div>...</div>;
+}
 ```
 
 ### useLink
@@ -144,10 +149,13 @@ A hook for setting link tags.
 ```jsx
 import { useLink } from 'preactheadmaster';
 
-useLink([
-  { rel: 'canonical', href: 'https://mysite.com/page' },
-  { rel: 'stylesheet', href: '/styles.css' }
-]);
+function MyComponent() {
+  useLink([
+    { rel: 'canonical', href: 'https://mysite.com/page' },
+    { rel: 'stylesheet', href: '/styles.css' }
+  ]);
+  return <div>...</div>;
+}
 ```
 
 ### useScript
@@ -163,10 +171,13 @@ A hook for setting script tags.
 ```jsx
 import { useScript } from 'preactheadmaster';
 
-useScript([
-  { src: 'https://example.com/script.js', async: true },
-  { innerHTML: `console.log('Hello, world!')` }
-]);
+function MyComponent() {
+  useScript([
+    { src: 'https://example.com/script.js', async: true },
+    { innerHTML: `console.log('Hello, world!')` }
+  ]);
+  return <div>...</div>;
+}
 ```
 
 ### useHtmlAttributes
@@ -182,7 +193,10 @@ A hook for setting HTML attributes.
 ```jsx
 import { useHtmlAttributes } from 'preactheadmaster';
 
-useHtmlAttributes({ lang: 'en', class: 'my-html-class' });
+function MyComponent() {
+  useHtmlAttributes({ lang: 'en', class: 'my-html-class' });
+  return <div>...</div>;
+}
 ```
 
 ### useBodyAttributes
@@ -198,61 +212,60 @@ A hook for setting body attributes.
 ```jsx
 import { useBodyAttributes } from 'preactheadmaster';
 
-useBodyAttributes({ class: 'my-body-class', 'data-theme': 'dark' });
+function MyComponent() {
+  useBodyAttributes({ class: 'my-body-class', 'data-theme': 'dark' });
+  return <div>...</div>;
+}
 ```
 
 ## Server-Side Rendering
 
-### renderStatic
+### renderStaticStream
 
-The `renderStatic` function is used for server-side rendering to collect all HeadMaster data.
-
-#### Returns
-
-An object containing:
-- `headMaster`: The collected HeadMaster data
-
-#### Usage
-
-```javascript
-import { renderStatic } from 'preactheadmaster';
-
-function serverRender() {
-  // Render your app
-  const appHtml = renderToString(<App />);
-
-  // Collect HeadMaster data
-  const { headMaster } = renderStatic();
-
-  // Use headMaster data to generate full HTML document
-  // ...
-}
-```
-
-### generateFullDocument
-
-The `generateFullDocument` function generates a complete HTML document string, including all HeadMaster data.
+The `renderStaticStream` function is used for server-side rendering with streaming support.
 
 #### Parameters
 
-- `headMaster`: The HeadMaster data object returned by `renderStatic`
-- `body`: The rendered body content of your application
+- `App`: The root component of your application
 
 #### Returns
 
-A string containing the full HTML document.
+An async generator that yields chunks of HTML
 
 #### Usage
 
 ```javascript
-import { renderToString } from 'preact-render-to-string';
-import { renderStatic, generateFullDocument } from 'preactheadmaster';
+import { renderStaticStream } from 'preactheadmaster';
 import App from './App';
 
-function serverRender() {
-  const appHtml = renderToString(<App />);
-  const { headMaster } = renderStatic();
-  const fullDocument = generateFullDocument(headMaster, appHtml);
-  return fullDocument;
+async function serverRender(req, res) {
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+
+  for await (const chunk of renderStaticStream(App)) {
+    res.write(chunk);
+  }
+
+  res.end();
 }
 ```
+
+## Priority System
+
+PreactHeadMaster implements a priority system for managing conflicting head elements. When multiple components attempt to set the same head element, the one with the highest priority (or most recently added) will take precedence.
+
+To set a priority for a head element, include a `priority` property in the tag object:
+
+```jsx
+useMeta([
+  { name: 'description', content: 'High priority description', priority: 2 },
+  { name: 'description', content: 'Low priority description', priority: 1 }
+]);
+```
+
+In this case, the "High priority description" will be used.
+
+## Error Handling
+
+PreactHeadMaster includes built-in error logging. If an error occurs during head updates, it will be logged to the console with the prefix `[PreactHeadMaster Error]:`. This helps in identifying and debugging issues specific to PreactHeadMaster.
+
+For custom error handling, you can wrap your use of PreactHeadMaster components and hooks in try-catch blocks and handle errors as needed in your application.
