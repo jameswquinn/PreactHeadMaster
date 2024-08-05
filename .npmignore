@@ -1,0 +1,4 @@
+# Include specific files and directories
+!docs/
+!README.md
+!src/
