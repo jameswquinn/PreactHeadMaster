@@ -1,20 +1,24 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import typescript from '@rollup/plugin-typescript';
+import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import dts from 'rollup-plugin-dts';
 import packageJson from './package.json' assert { type: 'json' };
 
 const commonPlugins = [
   peerDepsExternal(),
   resolve(),
   commonjs(),
-  typescript({ tsconfig: './tsconfig.json' }),
+  babel({
+    babelHelpers: 'bundled',
+    presets: ['@babel/preset-env', '@babel/preset-react'],
+    extensions: ['.js', '.jsx'],
+    exclude: 'node_modules/**'
+  }),
 ];
 
 const commonConfig = {
-  input: 'src/index.ts',
+  input: 'src/index.js',
   external: ['preact', 'preact/hooks'],
 };
 
@@ -59,11 +63,5 @@ export default [
       },
     ],
     plugins: [...commonPlugins, terser()],
-  },
-  // TypeScript declaration files
-  {
-    input: 'src/index.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'es' }],
-    plugins: [dts()],
   },
 ];
