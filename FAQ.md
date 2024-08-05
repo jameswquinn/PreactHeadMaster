@@ -1,19 +1,26 @@
 # PreactHeadMaster FAQ
 
+Version: 1.0.0
+Last Updated: 2023-05-21
+
+This FAQ covers the latest version of PreactHeadMaster, including all recent improvements such as the priority system, performance optimizations, expanded SSR capabilities, and enhanced error handling.
+
 ## Table of Contents
 
 1. [General Questions](#general-questions)
-2. [Usage Questions](#usage-questions)
-3. [Performance Questions](#performance-questions)
-4. [Server-Side Rendering Questions](#server-side-rendering-questions)
-5. [Compatibility Questions](#compatibility-questions)
-6. [Troubleshooting](#troubleshooting)
+2. [Installation and Setup](#installation-and-setup)
+3. [Usage Questions](#usage-questions)
+4. [Performance Optimization](#performance-optimization)
+5. [Server-Side Rendering](#server-side-rendering)
+6. [Compatibility](#compatibility)
+7. [Troubleshooting](#troubleshooting)
+8. [Contributing](#contributing)
 
 ## General Questions
 
 ### What is PreactHeadMaster?
 
-PreactHeadMaster is a library for Preact applications that allows you to manage the document head. It provides a way to dynamically update meta tags, title, and other head elements in your Preact applications.
+PreactHeadMaster is a lightweight and efficient library for Preact applications that allows you to manage the document head. It provides a way to dynamically update meta tags, title, and other head elements in your Preact applications.
 
 ### How does PreactHeadMaster differ from react-helmet?
 
@@ -22,22 +29,33 @@ While PreactHeadMaster is inspired by react-helmet, it's specifically designed f
 - Additional hooks for more granular control
 - Improved TypeScript support
 - Better performance due to Preact's efficiency
-
-### Why the name "PreactHeadMaster"?
-
-The name "PreactHeadMaster" was chosen to clearly indicate its purpose (managing the head of a document) and its association with Preact. It also distinguishes it from other similar libraries while hinting at its comprehensive control over head elements.
+- Built-in priority system for managing conflicting head elements
+- Streaming SSR support
 
 ### Is PreactHeadMaster suitable for production use?
 
-Yes, PreactHeadMaster is designed for production use. It's built with performance and reliability in mind, and it's based on well-established patterns for managing document head elements in Preact applications.
+Yes, PreactHeadMaster is designed for production use. It's built with performance and reliability in mind, and includes features like error handling and a priority system for managing conflicting head elements.
 
-## Usage Questions
+## Installation and Setup
 
-### Do I need to wrap my entire app with HeadMasterProvider?
+### How do I install PreactHeadMaster?
 
-Yes, you should wrap your root component with `HeadMasterProvider` to ensure that the HeadMaster context is available throughout your application.
+You can install PreactHeadMaster using npm or yarn:
+
+```bash
+npm install preactheadmaster
+
+# or
+
+yarn add preactheadmaster
+```
+
+### How do I set up PreactHeadMaster in my application?
+
+Wrap your root component with `HeadMasterProvider`:
 
 ```jsx
+import { h } from 'preact';
 import { HeadMasterProvider } from 'preactheadmaster';
 
 function App() {
@@ -49,32 +67,53 @@ function App() {
 }
 ```
 
-### Can I use both the HeadMaster component and hooks in the same application?
+## Usage Questions
 
-Absolutely! You can use the `HeadMaster` component for static head management and hooks for more dynamic updates or when you need more granular control.
+### How do I update the document title?
 
-### How do I update the document title dynamically?
-
-You can use the `useTitle` hook to update the title dynamically:
+You can use the `useTitle` hook:
 
 ```jsx
 import { useTitle } from 'preactheadmaster';
 
 function MyComponent() {
-  useTitle(`Page ${currentPage}`);
-  // ...
+  useTitle('My Page Title');
+  return <div>...</div>;
 }
 ```
 
-### Can I use PreactHeadMaster with class components?
+### How do I add meta tags?
 
-Yes, you can use the `HeadMaster` component with class components. For hooks, you'll need to use function components or create a wrapper function component.
+Use the `useMeta` hook:
 
-## Performance Questions
+```jsx
+import { useMeta } from 'preactheadmaster';
 
-### Does PreactHeadMaster affect my app's performance?
+function MyComponent() {
+  useMeta([
+    { name: 'description', content: 'My page description' },
+    { property: 'og:title', content: 'My Open Graph Title' }
+  ]);
+  return <div>...</div>;
+}
+```
 
-PreactHeadMaster is designed to be lightweight and efficient. It only updates the DOM when necessary and batches updates for optimal performance. However, like any library, excessive use (e.g., updating head tags very frequently) could potentially impact performance.
+### Can I use both the HeadMaster component and hooks in the same application?
+
+Yes, you can use both the `HeadMaster` component for static head management and hooks for more dynamic updates or when you need more granular control.
+
+### How does the priority system work?
+
+PreactHeadMaster includes a priority system for managing conflicting head elements. When multiple components try to set the same head element, the one with the highest priority (or added most recently) will take precedence. You can set priorities like this:
+
+```jsx
+useMeta([
+  { name: 'description', content: 'High priority description', priority: 2 },
+  { name: 'description', content: 'Low priority description', priority: 1 }
+]);
+```
+
+## Performance Optimization
 
 ### How can I optimize PreactHeadMaster for better performance?
 
@@ -82,36 +121,43 @@ PreactHeadMaster is designed to be lightweight and efficient. It only updates th
 - Avoid unnecessary updates by using memoization techniques when passing arrays or objects to HeadMaster or hooks.
 - Use the `useHeadMaster` hook for conditional updates instead of conditionally rendering `HeadMaster` components.
 
-## Server-Side Rendering Questions
+### Does PreactHeadMaster affect my app's performance?
+
+PreactHeadMaster is designed to be lightweight and efficient. It only updates the DOM when necessary and batches updates for optimal performance. It also uses memoization to prevent unnecessary re-renders. However, like any library, excessive use (e.g., updating head tags very frequently) could potentially impact performance.
+
+## Server-Side Rendering
 
 ### How do I use PreactHeadMaster with server-side rendering?
 
-Use the `renderStatic` function after rendering your app to string, then use `generateFullDocument` to create the full HTML document:
+PreactHeadMaster supports server-side rendering with streaming capabilities. Use the `renderStaticStream` function:
 
 ```javascript
-import { renderToString } from 'preact-render-to-string';
-import { renderStatic, generateFullDocument } from 'preactheadmaster';
+import { renderStaticStream } from 'preactheadmaster';
 
-function serverRender() {
-  const appHtml = renderToString(<App />);
-  const { headMaster } = renderStatic();
-  return generateFullDocument(headMaster, appHtml);
+async function serverRender(req, res) {
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+
+  for await (const chunk of renderStaticStream(App)) {
+    res.write(chunk);
+  }
+
+  res.end();
 }
 ```
 
-### Does PreactHeadMaster work with streaming SSR?
+### Does PreactHeadMaster support streaming SSR?
 
-Currently, PreactHeadMaster doesn't support streaming SSR out of the box. It collects all head data after the entire app has been rendered. For streaming SSR, you might need to implement a custom solution.
+Yes, PreactHeadMaster supports streaming SSR out of the box. The `renderStaticStream` function returns an async generator that yields chunks of HTML, allowing for streaming rendering.
 
-## Compatibility Questions
-
-### Can I use PreactHeadMaster with other Preact libraries?
-
-Yes, PreactHeadMaster is designed to work seamlessly with other Preact libraries and doesn't interfere with normal Preact operations.
+## Compatibility
 
 ### Is PreactHeadMaster compatible with all Preact versions?
 
 PreactHeadMaster is compatible with Preact 10.x and above. Make sure to check the package.json for specific version requirements.
+
+### Can I use PreactHeadMaster with other Preact libraries?
+
+Yes, PreactHeadMaster is designed to work seamlessly with other Preact libraries and doesn't interfere with normal Preact operations.
 
 ### Can I use PreactHeadMaster in a project that's migrating from React to Preact?
 
@@ -132,7 +178,7 @@ This error occurs when you try to use a PreactHeadMaster hook outside of the `He
 
 ### How can I debug PreactHeadMaster?
 
-You can use the `useHeadMaster` hook to log changes to the HeadMaster data:
+PreactHeadMaster includes built-in error logging. Errors are logged to the console with the prefix `[PreactHeadMaster Error]:`. You can also use the `useHeadMaster` hook to log changes to the HeadMaster data:
 
 ```jsx
 import { useHeadMaster } from 'preactheadmaster';
@@ -144,10 +190,18 @@ function DebugComponent() {
 }
 ```
 
-This will help you track when and how your head data is changing.
+## Contributing
 
-### I've migrated from react-helmet, but some features are missing. What should I do?
+### How can I contribute to PreactHeadMaster?
 
-While PreactHeadMaster aims to cover most use cases of react-helmet, there might be some specific features that are implemented differently or not available. Check the API documentation for alternative approaches, or open an issue on the PreactHeadMaster GitHub repository for feature requests.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for more details on how to submit issues, create pull requests, and more.
 
-If you have any more questions or need further clarification, please don't hesitate to ask!
+### I've found a bug. How do I report it?
+
+Please open an issue on our GitHub repository. Provide as much detail as possible, including a minimal reproducible example if you can.
+
+### I have a feature request. How do I suggest it?
+
+Feature requests are welcome! Please open an issue on our GitHub repository describing the feature you'd like to see, why you need it, and how it should work.
+
+If you have any more questions or need further clarification, please don't hesitate to ask or open an issue on our GitHub repository!
