@@ -15,6 +15,8 @@
    - [useBodyAttributes](#usebodyattributes)
 3. [Server-Side Rendering](#server-side-rendering)
    - [renderStaticStream](#renderstaticstream)
+4. [Priority System](#priority-system)
+5. [Error Handling](#error-handling)
 
 ## Components
 
@@ -269,3 +271,20 @@ In this case, the "High priority description" will be used.
 PreactHeadMaster includes built-in error logging. If an error occurs during head updates, it will be logged to the console with the prefix `[PreactHeadMaster Error]:`. This helps in identifying and debugging issues specific to PreactHeadMaster.
 
 For custom error handling, you can wrap your use of PreactHeadMaster components and hooks in try-catch blocks and handle errors as needed in your application.
+
+```jsx
+import { useHeadMaster } from 'preactheadmaster';
+
+function MyComponent() {
+  try {
+    const { headMasterData, updateHeadMasterData } = useHeadMaster();
+    // Use headMasterData or updateHeadMasterData
+  } catch (error) {
+    console.error('Error in PreactHeadMaster:', error);
+    // Handle error as needed
+  }
+  return <div>...</div>;
+}
+```
+
+This error handling mechanism allows for graceful degradation and prevents app crashes due to head management issues.
