@@ -3,15 +3,9 @@
   "version": "1.0.0",
   "description": "A powerful document head manager for Preact applications",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "browser": "dist/index.umd.js",
+  "type": "module",
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "test": "jest",
-    "lint": "eslint src",
-    "format": "prettier --write \"src/**/*.{js,jsx}\"",
-    "prepare": "husky install"
+    "build": "rollup -c"
   },
   "keywords": [
     "preact",
@@ -26,24 +20,17 @@
     "preact": "^10.5.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
-    "@babel/preset-env": "^7.14.0",
-    "@babel/preset-react": "^7.13.13",
-    "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-commonjs": "^19.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.0",
-    "eslint": "^7.26.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-react": "^7.23.2",
-    "husky": "^6.0.0",
-    "jest": "^26.6.3",
-    "lint-staged": "^11.0.0",
-    "preact": "^10.5.0",
-    "prettier": "^2.3.0",
-    "rollup": "^2.47.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-terser": "^7.0.2"
+    "@babel/core": "^7.24.9",
+    "@babel/plugin-transform-react-jsx": "^7.24.7",
+    "@babel/preset-env": "^7.25.0",
+    "@babel/preset-react": "^7.24.7",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.19.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "terser": "^5.31.3"
   },
   "husky": {
     "hooks": {
