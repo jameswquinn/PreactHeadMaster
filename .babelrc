@@ -1,0 +1,18 @@
+{
+  "presets": [
+    ["@babel/preset-env", {
+      "targets": "> 0.25%, not dead",
+      "modules": false
+    }],
+    ["@babel/preset-react", {
+      "pragma": "h",
+      "pragmaFrag": "Fragment"
+    }]
+  ],
+  "plugins": [
+    ["@babel/plugin-transform-react-jsx", {
+      "pragma": "h",
+      "pragmaFrag": "Fragment"
+    }]
+  ]
+}
