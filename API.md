@@ -22,7 +22,8 @@
 6. [Error Handling](#error-handling)
 7. [Nesting and Flattening](#nesting-and-flattening)
 8. [TypeScript Support](#typescript-support)
-9. [Performance Considerations](#performance-considerations)
+9. [PreactHeadMaster vs react-helmet](#preactheadmaster-vs-react-helmet)
+10. [Performance Considerations](#performance-considerations)
 
 ## Installation
 
@@ -382,6 +383,82 @@ In this example, the title "Inner Title" and the meta description "Inner descrip
 ## TypeScript Support
 
 PreactHeadMaster includes TypeScript definitions for all components, hooks, and functions. When using TypeScript, you'll get full type checking and autocompletion support.
+
+## PreactHeadMaster vs react-helmet
+
+PreactHeadMaster is inspired by react-helmet but is specifically designed for Preact applications. Here's a comparison to help users understand the similarities and differences:
+
+### Similarities
+
+1. **Purpose**: Both libraries manage the document head in React/Preact applications.
+2. **Declarative API**: Both use a declarative approach to define head elements.
+3. **Server-Side Rendering**: Both support server-side rendering.
+4. **Nesting**: Both allow nesting of components and flatten the resulting head elements.
+
+### Key Differences
+
+1. **Framework**: PreactHeadMaster is built for Preact, while react-helmet is for React.
+2. **Size**: PreactHeadMaster is typically smaller due to Preact's smaller size.
+3. **Performance**: PreactHeadMaster includes built-in performance optimizations like memoization.
+4. **Hooks API**: PreactHeadMaster provides a comprehensive hooks API for more granular control.
+5. **Priority System**: PreactHeadMaster includes a built-in priority system for managing conflicting elements.
+6. **Streaming SSR**: PreactHeadMaster supports streaming server-side rendering out of the box.
+7. **TypeScript Support**: PreactHeadMaster is built with TypeScript and provides robust type definitions.
+
+### API Comparison
+
+| Feature | PreactHeadMaster | react-helmet |
+|---------|------------------|--------------|
+| Main Component | `<HeadMaster>` | `<Helmet>` |
+| Context Provider | `<HeadMasterProvider>` | Not required |
+| Hooks | `useTitle`, `useMeta`, etc. | Not available |
+| Server Rendering | `renderStaticStream`, `rewind` | `renderStatic` |
+| Attribute Setting | Via hooks or component props | Via component props |
+
+### Migration from react-helmet
+
+If you're migrating from react-helmet to PreactHeadMaster, consider the following:
+
+1. Replace `Helmet` with `HeadMaster` components.
+2. Wrap your app with `HeadMasterProvider`.
+3. Consider using the hooks API for more granular control.
+4. Update your server-side rendering code to use `renderStaticStream` or `rewind`.
+5. Take advantage of the priority system for managing conflicting elements.
+
+Example migration:
+
+```jsx
+// react-helmet
+import { Helmet } from 'react-helmet';
+
+function MyComponent() {
+  return (
+    <div>
+      <Helmet>
+        <title>My Title</title>
+        <meta name="description" content="My description" />
+      </Helmet>
+      <h1>Hello, World!</h1>
+    </div>
+  );
+}
+
+// PreactHeadMaster
+import { HeadMaster, useTitle, useMeta } from 'preactheadmaster';
+
+function MyComponent() {
+  useTitle('My Title');
+  useMeta([{ name: "description", content: "My description" }]);
+  
+  return (
+    <div>
+      <h1>Hello, World!</h1>
+    </div>
+  );
+}
+```
+
+While PreactHeadMaster aims to provide similar functionality to react-helmet, it's optimized for Preact and includes additional features. Always refer to the PreactHeadMaster documentation for the most up-to-date and accurate information on its API and capabilities.
 
 ## Performance Considerations
 
