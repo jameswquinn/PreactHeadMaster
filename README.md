@@ -1,9 +1,9 @@
 # PreactHeadMaster
 
-PreactHeadMaster is a powerful and efficient document head manager for Preact applications. It allows you to dynamically update the `<head>` section of your HTML document, including title, meta tags, and more, with ease and performance in mind.
-
 [![npm version](https://badge.fury.io/js/preactheadmaster.svg)](https://badge.fury.io/js/preactheadmaster)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+PreactHeadMaster is a powerful and efficient document head manager for Preact applications. It allows you to dynamically update the `<head>` section of your HTML document, including title, meta tags, and more, with ease and performance in mind.
 
 ## Features
 
@@ -23,10 +23,12 @@ PreactHeadMaster is a powerful and efficient document head manager for Preact ap
 - [Usage](#usage)
   - [Basic Usage](#basic-usage)
   - [Hook-based Usage](#hook-based-usage)
-  - [Server-Side Rendering](#server-side-rendering)
-- [API Reference](#api-reference)
+  - [Priority System](#priority-system)
+- [Server-Side Rendering](#server-side-rendering)
 - [Performance Considerations](#performance-considerations)
 - [Error Handling](#error-handling)
+- [API Reference](#api-reference)
+- [FAQ](#faq)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -34,11 +36,9 @@ PreactHeadMaster is a powerful and efficient document head manager for Preact ap
 
 ```bash
 npm install preactheadmaster
-```
 
-or
+# or
 
-```bash
 yarn add preactheadmaster
 ```
 
@@ -121,12 +121,28 @@ function MyComponent() {
 }
 ```
 
-### Server-Side Rendering
+### Priority System
+
+PreactHeadMaster includes a priority system for managing conflicting head elements:
+
+```jsx
+import { useMeta } from 'preactheadmaster';
+
+function MyComponent() {
+  useMeta([
+    { name: 'description', content: 'High priority description', priority: 2 },
+    { name: 'description', content: 'Low priority description', priority: 1 }
+  ]);
+
+  return <div>...</div>;
+}
+```
+
+## Server-Side Rendering
 
 PreactHeadMaster supports server-side rendering with streaming capabilities:
 
 ```javascript
-import { renderToString } from 'preact-render-to-string';
 import { renderStaticStream } from 'preactheadmaster';
 import App from './App';
 
@@ -140,10 +156,6 @@ async function serverRender(req, res) {
   res.end();
 }
 ```
-
-## API Reference
-
-For a complete API reference, please see our [API Documentation](API.md).
 
 ## Performance Considerations
 
@@ -159,6 +171,14 @@ PreactHeadMaster includes robust error handling:
 
 - Centralized error logging for easier debugging
 - Graceful handling of runtime errors to prevent app crashes
+
+## API Reference
+
+For a complete API reference, please see our [API Documentation](API.md).
+
+## FAQ
+
+For answers to common questions, please check our [FAQ](FAQ.md).
 
 ## Contributing
 
