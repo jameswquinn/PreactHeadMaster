@@ -1,6 +1,9 @@
 # Include specific files and directories
 !docs/
 !README.md
+!API.md
+!FAQ.md
+!CHANGELOG.md
 !src/
 !examples/README.md
 
