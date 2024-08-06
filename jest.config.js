@@ -1,8 +1,11 @@
-module.exports = {
-  testEnvironment: 'jsdom',
-  transform: {
-    '^.+\\.jsx?$': 'babel-jest',
+{
+  "transform": {
+    "^.+\\.jsx?$": "babel-jest"
   },
-  moduleFileExtensions: ['js', 'jsx'],
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
-};
+  "testEnvironment": "jsdom",
+  "setupFilesAfterEnv": ["@testing-library/jest-dom/extend-expect"],
+  "moduleFileExtensions": ["js", "jsx"],
+  "testPathIgnorePatterns": ["/node_modules/", "/dist/"],
+  "collectCoverageFrom": ["src/**/*.{js,jsx}"],
+  "rootDir": "src"
+}
